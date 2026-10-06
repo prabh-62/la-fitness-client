@@ -1,0 +1,61 @@
+{
+  "name": "la-fitness-client",
+  "version": "0.1.0",
+  "description": "Ergonomic, typed client for the LA Fitness mobile API (check-in history & account).",
+  "keywords": [
+    "api-client",
+    "check-in",
+    "fitness",
+    "gym",
+    "la-fitness",
+    "lafitness"
+  ],
+  "homepage": "https://github.com/prabh-62/la-fitness-client#readme",
+  "bugs": {
+    "url": "https://github.com/prabh-62/la-fitness-client/issues"
+  },
+  "license": "MIT",
+  "author": "Prabhdeep Singh Batth",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prabh-62/la-fitness-client.git",
+    "directory": "packages/la-fitness-client"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "la-fitness-client-source": "./src/index.ts",
+      "default": "./dist/index.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.mjs",
+      "./package.json": "./package.json"
+    },
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "dev": "vp pack --watch",
+    "test": "vp test",
+    "check": "vp check",
+    "prepublishOnly": "vp run build"
+  },
+  "dependencies": {
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "engines": {
+    "node": ">=26"
+  }
+}

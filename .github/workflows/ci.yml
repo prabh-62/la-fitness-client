@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  ci:
+    name: Check, test, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Installs Vite+ (version from the pnpm catalog), Node (pinned via
+      # devEngines.runtime in package.json), pnpm, and runs `vp install`.
+      - uses: voidzero-dev/setup-vp@3754dd7dbdb32bd8f6d28b6043de13ad3a75f21f # v1.21.1
+        with:
+          cache: true
+
+      - name: Format, lint, type-check
+        run: vp check
+
+      - name: Build
+        run: vp run -r build
+
+      # `vp pack` regenerates the library's package.json `exports`; fail if the
+      # committed copy is stale.
+      - name: Check build left no changes
+        run: git diff --exit-code
+
+      - name: Test
+        run: vp run -r test
+
+      - name: Pack tarball
+        run: vp -C packages/la-fitness-client pm pack --pack-destination "$RUNNER_TEMP/pack"
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: la-fitness-client-tarball
+          path: ${{ runner.temp }}/pack/*.tgz
+          if-no-files-found: error
+          retention-days: 14
